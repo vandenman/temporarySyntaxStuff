@@ -1,6 +1,6 @@
-source("R/simplifyResults.R")
+library(tempSyntaxPackage)
 
-resultsFile <- file.path("results_objects", "Descriptives.rds")
+resultsFile <- file.path("tests", "testthat", "rawResults", "Descriptives.rds")
 if (!file.exists(resultsFile)) {
 
   path <- normalizePath("../../jaspDescriptives")
@@ -32,43 +32,14 @@ if (!file.exists(resultsFile)) {
   results2 <- tmp$results2
 }
 # debugonce(simplifyResults)
-simp <- simplifyResults(results)
+jaspTools::view(results1)
+
+simp <- simplifyResults(results1)
 
 
-foo <- function(x) {
-  tibble::tibble(name = names(x), class = unname(sapply(x, \(x) class(x)[1])))
-}
+tb <- simp$`Descriptive Statistics`
+tb$Level[1] <- "hoi"
 
-results$results$tables$collection$tables_debSame
-foo(simp)
-foo(simp$`Frequency Tables`)
-foo(simp$)
-
-opts2 <- options
-opts2$plotCorrelationMatrix <- FALSE
-opts2$splitPlots <- FALSE
-opts2$transposeMainTable <- TRUE
-results2 <- runAnalysis("Descriptives", "test.csv", opts2)
-
+jaspTools::view(results2)
 simp2 <- simplifyResults(results2)
-print(simp2$`Descriptive Statistics`, has_row_id = FALSE)
-undebug(simplifyTable)
-simp2$`Frequency Tables`$`Frequencies for facFive`
-simp2$`Frequency Tables`$`Frequencies for debSame`
-
-tibble::tibble(a = c("0", ""))
-
-cat(simp2$`Descriptive Statistics`$data[1, ])
-
-simp2$`Frequency Tables`$`Frequencies for facFive`
-results$results$.meta
-# TODO - this table is not transposed!
-simp$`Descriptive Statistics`
-
-# the type should not be character!
-simp$`Frequency Tables`$`Frequencies for facFive`$Valid.Percent # bad
-simp$`Frequency Tables`$`Frequencies for facFive`$Percent       # good
-simp$`Frequency Tables`$`Frequencies for facFive`
-
-names(simp)
-
+simp2

@@ -1,4 +1,4 @@
-# A temporary repo for the syntax project
+# A temporary repo/ package for the syntax project
 
 All relevant functions so far are in `R/simplifyResults.R`.
 The working directory is always assumed to be the top level of the repository.
@@ -8,12 +8,12 @@ The working directory is always assumed to be the top level of the repository.
 In general usage looks like this:
 ```r
 rawResults <- jaspTools::runAnalysis(...)
-simplifiedResults <- simplifyResults(rawResults)
+simplifiedResults <- tempSyntaxPackage::simplifyResults(rawResults)
 ```
 
 For a Bayesian one-sample T-test this may look like this:
 ```r
-source("R/simplifyResults.R")
+library(tempSyntaxPackage)
 options <- jaspTools::analysisOptions("TTestBayesianOneSample")
 options$variables <- c("contNormal", "contGamma")
 options$descriptives <- TRUE

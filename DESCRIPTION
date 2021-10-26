@@ -1,0 +1,18 @@
+Package: tempSyntaxPackage
+Type: Package
+Title: What the package does (short line)
+Version: 1.0
+Date: 2021-09-23
+Author: Who wrote it
+Maintainer: Who to complain to <yourfault@somewhere.net>
+Description: More about what it does (maybe more than one line)
+License: What license is it under?
+RoxygenNote: 7.1.2
+Encoding: UTF-8
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Imports:
+    pillar,
+    tibble,
+    vctrs

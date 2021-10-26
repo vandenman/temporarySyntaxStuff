@@ -1,4 +1,4 @@
-source("R/simplifyResults.R")
+library(tempSyntaxPackage)
 
 resultsFile <- file.path("results_objects", "TTestBayesianOneSample.rds")
 if (!file.exists(resultsFile)) {
