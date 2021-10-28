@@ -13,7 +13,7 @@
 #' @rdname formatOptions
 #' @export
 resetFormatOptions <- function() {
-  do.call(formatOptions, .defaultFormatOptions)
+  formatOptions(.defaultFormatOptions)
 }
 
 #' @rdname formatOptions

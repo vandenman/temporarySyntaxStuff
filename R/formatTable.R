@@ -355,7 +355,7 @@ ctl_new_pillar.jaspTableWrapper <- function(controller, x, width, ..., title = N
       bot_bot_rule = pillar::new_pillar_component(list(strrep(botLineChar, columnWidth)),   width = columnWidth)
     )
 
-    if (debugIsOn())
+    if (getOption("debug"))
       lst <- append(lst, list(type = type), after = 4)
 
   } else {
@@ -367,7 +367,7 @@ ctl_new_pillar.jaspTableWrapper <- function(controller, x, width, ..., title = N
       bottom_rule = pillar::new_pillar_component(list(strrep(botLineChar, columnWidth)), width = columnWidth)
     )
 
-    if (debugIsOn()) {
+    if (getOption("debug")) {
       lst <- append(lst, list(type = type), after = 3)
     }
   }
