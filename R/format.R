@@ -5,7 +5,7 @@ getIndent <- function(indent) {
 
 # TODO: are the format.xxx function deprecated in favor of getFormat?
 #' @export
-format.jaspResultsWrapper <- function(x, indent = 4, short = FALSE, ...) {
+format.jaspResultsWrapper <- function(x, indent = getFormatOption("indent"), short = getFormatOption("short"), ...) {
 
   individualFormats <- lapply(x, getFormat, indent = indent, short = short)
   if (length(individualFormats) > 1L && !short) {
@@ -16,14 +16,14 @@ format.jaspResultsWrapper <- function(x, indent = 4, short = FALSE, ...) {
   }
 
   res <- unlist(individualFormats, use.names = FALSE)
-  if (debugIsOn())
+  if (getFormatOption("debug"))
     res <- c("jaspResultsWrapper", paste0(getIndent(indent), res))
 
   return(res)
 }
 
 #' @export
-format.jaspContainerWrapper <- function(x, indent = 4, short = FALSE, ...) {
+format.jaspContainerWrapper <- function(x, indent = getFormatOption("indent"), short = getFormatOption("short"), ...) {
   individualFormats <- lapply(x, getFormat, indent = indent, short = short)
   if (length(individualFormats) > 1L && !short) {
     tmp <- vector("list", 2L * length(individualFormats) - 1L)
@@ -38,7 +38,7 @@ format.jaspContainerWrapper <- function(x, indent = 4, short = FALSE, ...) {
     title <- ""
   }
 
-  if (debugIsOn())
+  if (getFormatOption("debug"))
     title <- paste("jaspContainerWrapper:", title)
 
   if (!short)
@@ -47,8 +47,8 @@ format.jaspContainerWrapper <- function(x, indent = 4, short = FALSE, ...) {
 }
 
 #' @export
-format.jaspPlotWrapper <- function(x, indent = 4, short = FALSE, ...) {
-  title <- if (debugIsOn()) paste("jaspPlotWrapper:", names(x)[1L]) else names(x)[1L]
+format.jaspPlotWrapper <- function(x, indent = getFormatOption("indent"), short = getFormatOption("short"), ...) {
+  title <- if (getFormatOption("debug")) paste("jaspPlotWrapper:", names(x)[1L]) else names(x)[1L]
   if (!short)
     title <- c(title, paste0(getIndent(indent), terminalPlot(x)))
   return(title)
@@ -66,12 +66,12 @@ getFormat.default <- function(x, ...) {
 }
 
 #' @export
-getFormat.jaspWrapper <- function(x, indent = 4, short = FALSE, ...) {
+getFormat.jaspWrapper <- function(x, indent = getFormatOption("indent"), short = getFormatOption("short"), ...) {
   return(format(x, indent, short, ...))
 }
 
 #' @export
-getFormat.jaspTableWrapper <- function(x, indent = 4, short = FALSE) {
+getFormat.jaspTableWrapper <- function(x, indent = getFormatOption("indent"), short = getFormatOption("short")) {
   if (short) {
     return(tbl_sum.jaspTableWrapper(x))
   } else {
@@ -82,13 +82,13 @@ getFormat.jaspTableWrapper <- function(x, indent = 4, short = FALSE) {
 }
 
 #' @export
-getFormat.jaspHtmlWrapper <- function(x, indent = 4, short = FALSE) {
+getFormat.jaspHtmlWrapper <- function(x, indent = getFormatOption("indent"), short = getFormatOption("short")) {
 
   title <- attr(x, "title")
   if (title == "hide me")
     title <- ""
 
-  if (debugIsOn())
+  if (getFormatOption("debug"))
     title <- paste("jaspHtmlWrapper:", title)
 
   if (!short)
@@ -121,7 +121,7 @@ terminalPlot <- function(plt) {
 }
 
 #' @export
-print.jaspWrapper <- function(x, indent = 4, short = FALSE,...) {
+print.jaspWrapper <- function(x, indent = getFormatOption("indent"), short = getFormatOption("short"),...) {
   writeLines(getFormat(x, indent = indent, short = short, ...))
   invisible(x)
 }

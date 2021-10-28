@@ -33,13 +33,15 @@ if (!file.exists(resultsFile)) {
 }
 # debugonce(simplifyResults)
 jaspTools::view(results1)
+simp1 <- simplifyResults(results1)
+simp1
+simp1$`Descriptive Statistics`
 
-simp <- simplifyResults(results1)
-
-
-tb <- simp$`Descriptive Statistics`
-tb$Level[1] <- "hoi"
 
 jaspTools::view(results2)
 simp2 <- simplifyResults(results2)
 simp2
+
+formatOptions(indent = 2, debug = TRUE, short = TRUE)
+simp2
+

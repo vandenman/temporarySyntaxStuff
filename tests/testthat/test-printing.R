@@ -1,18 +1,19 @@
 test_that("TTestBayesianOneSample equals its snapshot", {
 
-  debugOff()
+  resetFormatOptions()
 
   rawResults <- loadRawResults("TTestBayesianOneSample.rds")
   simplifiedResults <- simplifyResults(rawResults)
   expect_snapshot(simplifiedResults)
 
-  debugOn()
+  formatOptions(debug = TRUE)
   expect_snapshot(print(simplifiedResults, short = TRUE, indent = 2))
-  debugOff()
 
 })
 
 test_that("Descriptives equals its snapshot", {
+
+  resetFormatOptions()
 
   temp <- loadRawResults("Descriptives.rds")
 
@@ -24,17 +25,15 @@ test_that("Descriptives equals its snapshot", {
   simplifiedResults2 <- simplifyResults(rawResults2)
   expect_snapshot(simplifiedResults2)
 
-  debugOn()
+  formatOptions(debug = TRUE)
   expect_snapshot(print(simplifiedResults1, short = TRUE, indent = 3))
-  debugOff()
-
-  debugOn()
   expect_snapshot(print(simplifiedResults2, short = TRUE, indent = 4))
-  debugOff()
 
 })
 
 test_that("Distributions equals its snapshot", {
+
+  resetFormatOptions()
 
   temp <- loadRawResults("Distributions.rds")
 
@@ -42,8 +41,7 @@ test_that("Distributions equals its snapshot", {
   simplifiedResults1 <- simplifyResults(rawResults1)
   expect_snapshot(simplifiedResults1)
 
-  debugOn()
+  formatOptions(debug = TRUE)
   expect_snapshot(print(simplifiedResults1, short = TRUE, indent = 2))
-  debugOff()
 
 })

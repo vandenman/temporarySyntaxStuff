@@ -213,7 +213,7 @@ tbl_format_setup.jaspTableWrapper <- function(x, width = NULL, ..., n = NULL, ma
 
 #' @export
 tbl_sum.jaspTableWrapper <- function(x, ...) {
-  if (debugIsOn())
+  if (getFormatOption("debug"))
     paste("jaspTableWrapper:", getTableMeta(x)$title)
   else getTableMeta(x)$title
 }
