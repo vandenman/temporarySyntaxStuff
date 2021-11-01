@@ -13,9 +13,53 @@ getFieldsAsDf <- function(table) {
       fields[[i]]$format <- ""
     if (is.null(fields[[i]]$overTitle))
       fields[[i]]$overTitle <- ""
+
+    fields[[i]]$.footnotes <- if (is.null(fields[[i]]$.footnotes)) {
+      NA_integer_
+    } else {
+      unlist(fields[[i]]$.footnotes)
+    }
+
+    # if it turns out that footnotes must be represented as lists then this may be useful
+    # if (is.null(fields[[i]]$.footnotes)) {
+    #   fields[[i]]$.footnotes <- list()
+    # }
   }
+
   return(do.call(rbind.data.frame, fields))
+  # use this is footnotes must be lists
+  # return(listOfListsToDataFrame(fields))
 }
+
+listOfListsToDataFrame <- function(lst) {
+
+  # this function only exists because do.call(rbind.data.frame, list(lst, lst))
+  # does not work properly, when you want an entry to be a list which is one way
+  # to represent footnotes.
+  # rbind tries to unpack lists, whereas this function keeps them as is.
+
+  lstToColumn <- function(vals) {
+    if (is.list(vals[[1L]]) || length(vals[[1L]]) != 1L) { # keep lists AsIs
+      I(vals)
+    } else { # convert everything else to vector
+      unlist(vals)
+    }
+  }
+
+  nms <- Reduce(unique, lapply(lst, names))
+  res <- NULL#data.frame()
+  for (nm in nms) {
+    vals <- lapply(lst, `[[`, nm)
+    if (is.null(res)) {
+      res <- data.frame(lstToColumn(vals))
+      names(res) <- nm
+    } else {
+      res[[nm]] <- lstToColumn(vals)
+    }
+  }
+  return(res)
+}
+
 
 simplifyTable <- function(table) {
 
@@ -24,7 +68,7 @@ simplifyTable <- function(table) {
 
   tableList <- lapply(seq_len(nrow(fields)), function(i) {
 
-    name  <- fields[i, "name"]
+    name <- fields[i, "name"]
     values <- if (fields[i, "type"] == "string") {
       v <- unlist(lapply(data, `[[`, name))
       # if we don't replace empty strings by NAs then pillar explicitly prints "" (as "\"\"") and also turns "0" into "\"0\""
@@ -34,14 +78,12 @@ simplifyTable <- function(table) {
       unlist(lapply(data, function(x, name) {
         y <- x[[name]]
         if (is.numeric(y)) y else if (is.integer(x)) NA_integer_ else NA_real_
+        # if (is.numeric(y)) y else if (is.integer(x)) NA_integer_ else y
       }, name = name))
     }
 
     if (isTRUE(fields[i, "combine"]))
       values[duplicated(values)] <- NA
-
-    # if (fields[i, "type"] == "number")
-    #   values <- applyPillarNum(values, fields[i, "format"])
 
     values
 

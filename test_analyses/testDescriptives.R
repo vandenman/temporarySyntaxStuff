@@ -31,7 +31,7 @@ if (!file.exists(resultsFile)) {
   results1 <- tmp$results1
   results2 <- tmp$results2
 }
-# debugonce(simplifyResults)
+
 jaspTools::view(results1)
 simp1 <- simplifyResults(results1)
 simp1
@@ -44,4 +44,3 @@ simp2
 
 formatOptions(indent = 2, debug = TRUE, short = TRUE)
 simp2
-

@@ -82,9 +82,56 @@ tbl_format_setup.jaspTableWrapper <- function(x, width = NULL, ..., n = NULL, ma
     # this is ugly
     fields <- transposedFields
 
-  } else if (!is.null(meta$transposed) && meta$transposed) {
+  } else if (meta$transposed) {
 
-    # TODO!
+    browser()
+    # mat is a data.frame where each column is a list.
+    # those lists have named elements with values, to support mixed types
+    mat <- do.call(data.frame, lapply(split(x, seq_len(nrow(x))), function(x) I(as.list(x))))
+
+    matNames <- paste0("V", seq_len(nrow(x)))
+    colnames(mat) <- matNames
+
+    transposedFields <- data.frame(
+      name      = matNames,
+      title     = x[[1]],
+      type      = "mixed",
+      combine   = FALSE,
+      format    = "mixed",
+      overTitle = unique(fields$overTitle)
+    )
+    fields
+
+    # add a column since the original column names now become the first row
+    transposedFields <- rbind.data.frame(
+      # TODO: this should be a different name
+      data.frame(name = "V0", title = "", type = "string", combine = FALSE, format = "string", overTitle = ""),
+      transposedFields
+    )
+
+    meta$transposedFields <- transposedFields
+
+    # use the internal names
+    for (i in seq_along(mat))
+      names(mat[[i]]) <- fields[["name"]]
+    mat <- mat[-(1:2), , drop = FALSE]
+
+    # bind the original column names as the first row
+    mat <- cbind.data.frame(data.frame(name = I(as.list(fields$name[-(1:2)]))), mat)
+    names(mat[[1]]) <- rep("V0", nrow(mat)) # there must be some name
+
+    colnames(mat) <- transposedFields[["name"]]
+
+    fields <- rbind(transposedFields[1, ], fields)
+
+    meta$fields <- transposedFields
+    meta$originalFields <- fields
+
+    x <- jaspTableWrapper(mat, meta)
+
+    # this is ugly
+    fields <- transposedFields
+
   } else {
 
     for (i in seq_along(x))  {
@@ -104,8 +151,9 @@ tbl_format_setup.jaspTableWrapper <- function(x, width = NULL, ..., n = NULL, ma
     for (i in seq_along(allOverTitles)) {
       idx <- which(fields[["overTitle"]] == allOverTitles[i])
 
-      if (!identical(idx, idx[1L]:(idx[1L] + length(idx[1L]))))
+      if (length(idx) != 1L && !identical(idx, idx[1L]:(idx[1L] + length(idx) - 1L))) {
         warning("indices for overtitles were not consecutive!")
+      }
 
       if (length(idx) > 1L) {
         # TODO: benchmark this vs substring?
@@ -119,7 +167,7 @@ tbl_format_setup.jaspTableWrapper <- function(x, width = NULL, ..., n = NULL, ma
           overTitleChunks[length(overTitleChunks)] <- paste0(overTitleChunks[length(overTitleChunks)], " ")
 
       } else { # only one chunk
-        overTitleChunks <- overTitleChunks
+        overTitleChunks <- fields[[idx[1L], "overTitle"]]
       }
 
       for (j in seq_along(idx)) {
@@ -276,7 +324,7 @@ ctl_new_pillar.jaspTableWrapper <- function(controller, x, width, ..., title = N
   data <- if (!is.list(x)) {
     pillar::pillar(x)$data
   } else {
-      pillar::new_ornament(x)
+    pillar::new_ornament(x)
   }
 
   columnWidth <- max(attr(title, "width"), attr(data, "width")) + 1
@@ -301,6 +349,7 @@ ctl_new_pillar.jaspTableWrapper <- function(controller, x, width, ..., title = N
     originalFields <- meta$originalFields
     rawdata <- character(length(x))
     # TODO: this needs to be wrapped in a function and could be reused in other places, e.g., tbl_format_setup.jaspTableWrapper
+    browser()
     for (i in seq_along(x))  {
       nm <- names(x)[i]
       j <- which(originalFields$name == nm)
@@ -355,7 +404,7 @@ ctl_new_pillar.jaspTableWrapper <- function(controller, x, width, ..., title = N
       bot_bot_rule = pillar::new_pillar_component(list(strrep(botLineChar, columnWidth)),   width = columnWidth)
     )
 
-    if (getOption("debug"))
+    if (getFormatOption("debug"))
       lst <- append(lst, list(type = type), after = 4)
 
   } else {
@@ -367,7 +416,7 @@ ctl_new_pillar.jaspTableWrapper <- function(controller, x, width, ..., title = N
       bottom_rule = pillar::new_pillar_component(list(strrep(botLineChar, columnWidth)), width = columnWidth)
     )
 
-    if (getOption("debug")) {
+    if (getFormatOption("debug")) {
       lst <- append(lst, list(type = type), after = 3)
     }
   }
